@@ -4,7 +4,6 @@ import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import {z} from 'zod';
 import {revalidatePath} from 'next/cache';
-import postgres from 'postgres';
 import {redirect} from 'next/navigation';
 const sql=neon(process.env.DATABASE_URL!);
 //const sql=postgres(process.env.POSTGRES_URL!,{ssl:'require'});
@@ -74,6 +73,7 @@ export async function createInvoice(prevState:State, formData:FormData) {
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
   } catch (error) {
+    console.error('Failed to update invoice:', error);
     // If a database error occurs, return a more specific error.
     return {
       message: 'Database Error: Failed to Create Invoice.',
@@ -108,6 +108,8 @@ export async function updateInvoice(id: string, formData: FormData) {
           WHERE id = ${id}
         `;
       } catch (error) {
+        console.error('Failed to update invoice:', error);
+
         return { message: 'Database Error: Failed to Update Invoice.' };
       }
    
